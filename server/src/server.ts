@@ -44,10 +44,9 @@ const heldKeys = new Set<string>();
 const wss = new WebSocketServer({ port: PORT });
 
 wss.on("connection", (ws: WebSocket) => {
-  console.log("📱 Client connected");
+  console.log("Client connected");
 
-  ws.on("message", (raw: Buffer) => {
-    try {
+    ws.on("message", (raw: Buffer | string) => {    try {
       const { button, action } = JSON.parse(raw.toString()) as Message;
 
       const key = KEY_MAP[button];
@@ -72,8 +71,9 @@ wss.on("connection", (ws: WebSocket) => {
   ws.on("close", () => {
     heldKeys.forEach((key) => robot.keyToggle(key, "up"));
     heldKeys.clear();
-    console.log("📴 Client disconnected, keys released");
+    console.log("Client disconnected, keys released");
   });
 });
 
 console.log(`🚀 WS server running on ws://localhost:${PORT}`);
+console.log(`   Find your local IP: ipconfig (Win) or ifconfig (Mac)`);

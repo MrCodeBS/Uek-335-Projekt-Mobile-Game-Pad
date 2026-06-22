@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gamepad</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 20px;
+    }
+
+    button {
+      font-size: 20px;
+      padding: 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <button ontouchstart="send('UP','press')" ontouchend="send('UP','release')">⬆️</button>
+  <button ontouchstart="send('A','press')" ontouchend="send('A','release')">A</button>
+  <button ontouchstart="send('B','press')" ontouchend="send('B','release')">B</button>
+
+  <button ontouchstart="send('LEFT','press')" ontouchend="send('LEFT','release')">⬅️</button>
+  <button ontouchstart="send('DOWN','press')" ontouchend="send('DOWN','release')">⬇️</button>
+  <button ontouchstart="send('RIGHT','press')" ontouchend="send('RIGHT','release')">➡️</button>
+
+<script>
+let ws = new WebSocket("ws://YOUR_PC_IP:8080");
+
+function send(button, action) {
+  ws.send(JSON.stringify({ button, action }));
+}
+</script>
+
+</body>
+</html>
