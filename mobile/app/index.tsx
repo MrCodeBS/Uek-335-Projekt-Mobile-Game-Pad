@@ -96,15 +96,15 @@ export default function GamepadScreen() {
       </View>
 
       {/* BEGINNER GYRO HACK UI */}
-      <View style={{ backgroundColor: gyroEnabled ? 'green' : 'red', padding: 10, marginBottom: 10, alignItems: 'center' }}>
+      <View style={{ backgroundColor: gyroEnabled ? 'green' : 'red', padding: 4, marginBottom: 8, alignItems: 'center', alignSelf: 'center', borderRadius: 4 }}>
         <Button 
-          title={gyroEnabled ? "[ GYRO IS ON - CLICK TO TURN OFF ]" : "[ GYRO IS OFF - CLICK TO TURN ON ]"} 
+          title={gyroEnabled ? "GYRO: ON" : "GYRO: OFF"} 
           color="#fff" 
           onPress={() => setGyroEnabled(!gyroEnabled)} 
         />
         {gyroEnabled && (
-          <Text style={{ color: '#fff', fontSize: 16, marginTop: 5, fontFamily: 'monospace' }}>
-            X: {gyroData.x.toFixed(3)} | Y: {gyroData.y.toFixed(3)} | Z: {gyroData.z.toFixed(3)}
+          <Text style={{ color: '#fff', fontSize: 10, marginTop: 2, fontFamily: 'monospace' }}>
+            X: {gyroData.x.toFixed(2)} | Y: {gyroData.y.toFixed(2)} | Z: {gyroData.z.toFixed(2)}
           </Text>
         )}
       </View>
