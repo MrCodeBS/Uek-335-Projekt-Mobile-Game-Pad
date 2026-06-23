@@ -32,7 +32,14 @@ type AxisMessage = {
   y: number; // -1 to 1
 };
 
-type Message = ButtonMessage | AxisMessage;
+type GyroMessage = {
+  type: "gyro";
+  x: number;
+  y: number;
+  z: number;
+};
+
+type Message = ButtonMessage | AxisMessage | GyroMessage;
 
 // ── Key Mapping ────────────────────────────────────────
 const KEY_MAP: Record<Button, string> = {
@@ -130,6 +137,38 @@ wss.on("connection", (ws: WebSocket) => {
       if (msg.type === "axis") {
         // Analog joystick data
         handleAxis(msg.x, msg.y);
+        return;
+      }
+
+      if (msg.type === "gyro") {
+        console.log("GYRO DATA RECEIVED!!! x:", msg.x.toFixed(2), "y:", msg.y.toFixed(2), "z:", msg.z.toFixed(2));
+        
+        // HACKY BEGINNER LOGIC FOR STEERING
+        if (msg.x > 1.5) {
+          if (!heldKeys.has("a")) {
+            robot.keyToggle("a", "down");
+            heldKeys.add("a");
+            console.log("TWISTED LEFT! PRESSING A!");
+          }
+        } else {
+          if (heldKeys.has("a")) {
+            robot.keyToggle("a", "up");
+            heldKeys.delete("a");
+          }
+        }
+
+        if (msg.x < -1.5) {
+          if (!heldKeys.has("d")) {
+            robot.keyToggle("d", "down");
+            heldKeys.add("d");
+            console.log("TWISTED RIGHT! PRESSING D!");
+          }
+        } else {
+          if (heldKeys.has("d")) {
+            robot.keyToggle("d", "up");
+            heldKeys.delete("d");
+          }
+        }
         return;
       }
 

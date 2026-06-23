@@ -14,7 +14,14 @@ type AxisMessage = {
   y: number;
 };
 
-type WSMessage = ButtonMessage | AxisMessage;
+type GyroMessage = {
+  type: 'gyro';
+  x: number;
+  y: number;
+  z: number;
+};
+
+type WSMessage = ButtonMessage | AxisMessage | GyroMessage;
 
 export function useWebSocket(url: string) {
   const ws = useRef<WebSocket | null>(null);
@@ -95,6 +102,13 @@ export function useWebSocket(url: string) {
     [send]
   );
 
+  const sendGyro = useCallback(
+    (x: number, y: number, z: number) => {
+      send({ type: 'gyro', x, y, z });
+    },
+    [send]
+  );
+
   // Clean up on unmount
   useEffect(() => {
     return () => {
@@ -108,5 +122,6 @@ export function useWebSocket(url: string) {
     disconnect,
     sendButton,
     sendAxis,
+    sendGyro,
   };
 }

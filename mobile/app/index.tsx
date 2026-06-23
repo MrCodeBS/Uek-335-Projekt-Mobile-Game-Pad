@@ -5,6 +5,7 @@ import { Link, useFocusEffect } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
+import { Gyroscope } from 'expo-sensors';
 
 import { useWebSocket } from '@/hooks/useWebSocket';
 import GameButton from '@/components/GameButton';
@@ -17,8 +18,10 @@ export default function GamepadScreen() {
 
   const [wsUrl, setWsUrl] = useState<string | null>(null);
   const [useJoystick, setUseJoystick] = useState(false);
+  const [gyroEnabled, setGyroEnabled] = useState(false);
+  const [gyroData, setGyroData] = useState({ x: 0, y: 0, z: 0 });
 
-  const { status, connect, disconnect, sendButton, sendAxis } = useWebSocket(
+  const { status, connect, disconnect, sendButton, sendAxis, sendGyro } = useWebSocket(
     wsUrl || 'ws://localhost:8080'
   );
 
@@ -51,6 +54,22 @@ export default function GamepadScreen() {
     }
   };
 
+  useEffect(() => {
+    let subscription: any;
+    if (gyroEnabled) {
+      Gyroscope.setUpdateInterval(100);
+      subscription = Gyroscope.addListener((data) => {
+        setGyroData(data);
+        sendGyro(data.x, data.y, data.z);
+      });
+    } else {
+      setGyroData({ x: 0, y: 0, z: 0 });
+    }
+    return () => {
+      if (subscription) subscription.remove();
+    };
+  }, [gyroEnabled, sendGyro]);
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Top Bar */}
@@ -74,6 +93,20 @@ export default function GamepadScreen() {
             <Button title="Settings" />
           </Link>
         </View>
+      </View>
+
+      {/* BEGINNER GYRO HACK UI */}
+      <View style={{ backgroundColor: gyroEnabled ? 'green' : 'red', padding: 10, marginBottom: 10, alignItems: 'center' }}>
+        <Button 
+          title={gyroEnabled ? "[ GYRO IS ON - CLICK TO TURN OFF ]" : "[ GYRO IS OFF - CLICK TO TURN ON ]"} 
+          color="#fff" 
+          onPress={() => setGyroEnabled(!gyroEnabled)} 
+        />
+        {gyroEnabled && (
+          <Text style={{ color: '#fff', fontSize: 16, marginTop: 5, fontFamily: 'monospace' }}>
+            X: {gyroData.x.toFixed(3)} | Y: {gyroData.y.toFixed(3)} | Z: {gyroData.z.toFixed(3)}
+          </Text>
+        )}
       </View>
 
       {/* Shoulder Buttons */}
