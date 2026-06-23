@@ -5,7 +5,7 @@ import { Link, useFocusEffect } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
-import { Gyroscope } from 'expo-sensors';
+import { Accelerometer } from 'expo-sensors';
 
 import { useWebSocket } from '@/hooks/useWebSocket';
 import GameButton from '@/components/GameButton';
@@ -57,8 +57,8 @@ export default function GamepadScreen() {
   useEffect(() => {
     let subscription: any;
     if (gyroEnabled) {
-      Gyroscope.setUpdateInterval(100);
-      subscription = Gyroscope.addListener((data) => {
+      Accelerometer.setUpdateInterval(50); // Faster updates for smoother steering
+      subscription = Accelerometer.addListener((data) => {
         setGyroData(data);
         sendGyro(data.x, data.y, data.z);
       });

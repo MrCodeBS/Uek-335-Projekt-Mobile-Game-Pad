@@ -141,32 +141,39 @@ wss.on("connection", (ws: WebSocket) => {
       }
 
       if (msg.type === "gyro") {
-        console.log("GYRO DATA RECEIVED!!! x:", msg.x.toFixed(2), "y:", msg.y.toFixed(2), "z:", msg.z.toFixed(2));
+        // We are now receiving Accelerometer (tilt) data from the phone!
+        // In landscape mode, tilting like a steering wheel usually changes the Y axis.
+        // Gravity ranges from -1 to 1. 0.2 is a slight tilt.
         
-        // HACKY BEGINNER LOGIC FOR STEERING
-        if (msg.x > 1.5) {
+        const TILT_THRESHOLD = 0.25;
+
+        // Steer Left
+        if (msg.y > TILT_THRESHOLD) {
           if (!heldKeys.has("a")) {
             robot.keyToggle("a", "down");
             heldKeys.add("a");
-            console.log("TWISTED LEFT! PRESSING A!");
+            console.log(`[TILT STEERING] 🏎️  Tilted Left! (Y: ${msg.y.toFixed(2)}) -> Pressing A`);
           }
         } else {
           if (heldKeys.has("a")) {
             robot.keyToggle("a", "up");
             heldKeys.delete("a");
+            console.log("[TILT STEERING] Released A");
           }
         }
 
-        if (msg.x < -1.5) {
+        // Steer Right
+        if (msg.y < -TILT_THRESHOLD) {
           if (!heldKeys.has("d")) {
             robot.keyToggle("d", "down");
             heldKeys.add("d");
-            console.log("TWISTED RIGHT! PRESSING D!");
+            console.log(`[TILT STEERING] 🏎️  Tilted Right! (Y: ${msg.y.toFixed(2)}) -> Pressing D`);
           }
         } else {
           if (heldKeys.has("d")) {
             robot.keyToggle("d", "up");
             heldKeys.delete("d");
+            console.log("[TILT STEERING] Released D");
           }
         }
         return;
