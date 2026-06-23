@@ -1,5 +1,5 @@
 const WebSocket = require("ws");
-const robot = require(robotjs);
+const robot = require('robotjs');
 
 //config
 const PORT = 8080;
@@ -38,8 +38,8 @@ wss.on('connection', (ws) =>{
         heldKeys.add(key);
         console.log(`⬇ ${button} → ${key}`);
       } else if (action === 'release'){
-        robot.keyToggle(key, 'down');
-        heldKeys.add(key);
+        robot.keyToggle(key, 'up');
+        heldKeys.delete(key);
         console.log(`⬆ ${button} → ${key}`);
       }
     }catch (e) {
